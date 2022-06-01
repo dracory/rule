@@ -1,7 +1,6 @@
 package businessrule
 
 import (
-	"log"
 	"testing"
 )
 
@@ -16,7 +15,7 @@ func TestBusinessRule(t *testing.T) {
 			return false
 		},
 	}
-	rule.SetContext("world")
+	//rule.SetContext("world")
 
 	// rule.SetCondition(func(context interface{}) bool {
 	// 	s := context.(string)
@@ -26,18 +25,28 @@ func TestBusinessRule(t *testing.T) {
 	// 	return false
 	// })
 
-	log.Println(rule.Condition)
-	log.Println(rule.Context)
+	// log.Println(rule.Condition)
+	// log.Println(rule.Context)
 
-	if fails, err := rule.Fails(); fails {
-		if err != nil {
-			t.Fatalf("No errors should be returned, but error '%s'", err.Error())
-		}
-		t.Fatalf("Rule should not fail")
+	fails, err := rule.Fails()
+
+	if err != nil {
+		t.Fatalf("On Fails. Unexpected errors thrown '%s'", err.Error())
 	}
-	// if !rule.Passes() {
-	// 	t.Fatalf("Rule should not pass")
-	// }
+
+	if fails {
+		t.Fatalf("On Fails. Rule should not fail")
+	}
+
+	hasPassed, err := rule.Passes()
+
+	if err != nil {
+		t.Fatalf("On Passes. Unexpected errors thrown %s", err.Error())
+	}
+
+	if !hasPassed {
+		t.Fatalf("On Passes. Rule should pass")
+	}
 }
 
 // func TestBusinessRuleInheritance(t *testing.T) {
