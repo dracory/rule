@@ -57,7 +57,7 @@ func (rule *AllowAccessRule) allowAccessCondition(context any) bool {
 
 Now lets use it where we need it
 
-```
+```go
 if NewAllowAccessRule(user).Fails() {
     panic('You are not allowed access to this part of the website');
 }
