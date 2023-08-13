@@ -1,3 +1,3 @@
-module github.com/gouniverse/business-rule
+module github.com/gouniverse/rule
 
-go 1.17
+go 1.20
