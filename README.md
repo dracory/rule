@@ -44,26 +44,30 @@ go get github.com/gouniverse/rule
 
 ## Usage ##
 
-- 1) Direct usage
+### 1) Direct usage
 
 ```php
 rule = rule.Rule{}
+
+// Your data. The given context for this rule
 rule.SetContext("Hello World")
+
+// Your condition. When will the condition be met
 rule.SetCondition(func (ctx any){
     value = ctx.(string)
     return value == "Hello world"
 });
 
 if (rule.Fails()) {
-    // Execute fail logic
+    // Then Execute fail logic
 }
 
 if (rule.Passes()) {
-    // Execute pass logic
+    // Then Execute pass logic
 }
 ```
 
-- 2. Your Custom Rule Type
+### 2) Your Custom Rule Type
 
 Direct usage may not be very practical if we want to reuse on multiple places and avoid duplication of business logic.
 
