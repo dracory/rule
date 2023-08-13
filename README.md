@@ -10,6 +10,8 @@ A business rule defines or constrains some aspect of business. Given a specified
 
 <b>Given</b> {context} <b>When</b> {condition(s)} <b>Then</b> {pass} <b>Or</b> {fail}
 
+## Specification
+
 The syntax Given {context} When {condition(s)} Then {pass} Or {fail} is a common way to express business rules. It is used to define a set of conditions that must be met in order for a business process to be successful.
 
 The Given clause specifies the context of the rule. This could be a specific event, such as a customer making a purchase, or a general condition, such as the availability of a product.
