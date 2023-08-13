@@ -20,6 +20,15 @@ The When clause specifies the conditions that must be met. These conditions can 
 
 The Then clause specifies the outcome of the rule. If all of the conditions are met, the business process will pass. If any of the conditions are not met, the business process will fail.
 
+Here is an example of a business rule expressed in this syntax:
+
+```
+Given a customer makes a purchase
+When the customer has a valid credit card
+Then the purchase will pass
+```
+
+
 ## Install ##
 
 ```go
