@@ -35,11 +35,11 @@ if (rule.Passes()) {
 }
 ```
 
-2. Separate Rule Type
+2. Your Custom Rule Type
 
 Direct usage may not be very practical if we want to reuse on multiple places and avoid duplication of business logic.
 
-Which is why it is better to create our own rule type
+Which is why it is recommended to create your own custom rule type
 
 
 ```go
