@@ -28,6 +28,10 @@ When the customer has a valid credit card
 Then the purchase will pass
 ```
 
+This rule states that a purchase will only be successful if the customer has a valid credit card. If the customer does not have a valid credit card, the purchase will fail.
+
+Business rules expressed in this syntax can be used to automate business processes and ensure that they are consistent and efficient. They can also be used to prevent errors and fraud.
+
 
 ## Install ##
 
