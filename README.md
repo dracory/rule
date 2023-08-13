@@ -44,7 +44,7 @@ go get github.com/gouniverse/rule
 
 ## Usage ##
 
-1) Direct usage
+- 1) Direct usage
 
 ```php
 rule = rule.Rule{}
@@ -63,7 +63,7 @@ if (rule.Passes()) {
 }
 ```
 
-2. Your Custom Rule Type
+- 2. Your Custom Rule Type
 
 Direct usage may not be very practical if we want to reuse on multiple places and avoid duplication of business logic.
 
@@ -107,25 +107,25 @@ if NewAllowAccessRule(user).Fails() {
 
 Business rules can be classified into three main types:
 
-    Structural rules define the relationships between different entities in a business, such as customers, products, and orders.
-    Decision rules determine how the business should respond to certain events, such as a customer making a purchase or a product becoming out of stock.
-    Process flow rules specify the steps that must be taken to complete a business process, such as the steps involved in processing a sales order.
+- Structural rules define the relationships between different entities in a business, such as customers, products, and orders.
+- Decision rules determine how the business should respond to certain events, such as a customer making a purchase or a product becoming out of stock.
+- Process flow rules specify the steps that must be taken to complete a business process, such as the steps involved in processing a sales order.
 
 Business rules are important for a number of reasons. They help to ensure that the business operates in a consistent and efficient manner. They also help to prevent errors and fraud. Additionally, business rules can be used to automate business processes, which can save time and money.
 
 The benefits of business rules include:
 
-    Consistency: Business rules ensure that the business operates in a consistent manner, regardless of who is performing the task. This is important for maintaining high-quality customer service and reducing errors.
-    Efficiency: Business rules can be used to automate business processes, which can save time and money. For example, a business rule can be used to automatically approve sales orders that meet certain criteria.
-    Compliance: Business rules can be used to ensure that the business complies with regulations. For example, a business rule can be used to verify that customers are of legal age to purchase alcohol.
-    Flexibility: Business rules can be easily changed as the business needs change. This is important for businesses that are constantly evolving.
+- Consistency: Business rules ensure that the business operates in a consistent manner, regardless of who is performing the task. This is important for maintaining high-quality customer service and reducing errors.
+- Efficiency: Business rules can be used to automate business processes, which can save time and money. For example, a business rule can be used to automatically approve sales orders that meet certain criteria.
+- Compliance: Business rules can be used to ensure that the business complies with regulations. For example, a business rule can be used to verify that customers are of legal age to purchase alcohol.
+- Flexibility: Business rules can be easily changed as the business needs change. This is important for businesses that are constantly evolving.
 
 The challenges of business rules include:
 
-    Complexity: Business rules can be complex, especially for large businesses with complex operations. This can make it difficult to manage and maintain business rules.
-    Documentation: It is important to document business rules in a clear and concise manner so that they can be easily understood by everyone who needs to use them.
-    Testing: Business rules should be tested thoroughly to ensure that they work as expected. This can be a time-consuming and expensive process.
-    Change management: Business rules need to be managed effectively as the business changes. This includes updating the rules when necessary and communicating the changes to everyone who needs to know about them.
+- Complexity: Business rules can be complex, especially for large businesses with complex operations. This can make it difficult to manage and maintain business rules.
+- Documentation: It is important to document business rules in a clear and concise manner so that they can be easily understood by everyone who needs to use them.
+- Testing: Business rules should be tested thoroughly to ensure that they work as expected. This can be a time-consuming and expensive process.
+- Change management: Business rules need to be managed effectively as the business changes. This includes updating the rules when necessary and communicating the changes to everyone who needs to know about them.
 
 Overall, business rules are an important tool for businesses of all sizes. They can help to improve efficiency, compliance, and flexibility. However, it is important to manage business rules effectively to avoid the challenges associated with them.
 
