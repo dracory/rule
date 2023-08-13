@@ -8,12 +8,18 @@ A business rule defines or constrains some aspect of business. Given a specified
 
 Formal specification: // Given {context} When {condition(s)} Then {pass} Or {fail}
 
+## Install ##
+
+```go
+go get github.com/gouniverse/rule
+```
+
 ## Usage ##
 
 1) Direct usage
 
 ```php
-rule = Rule{}
+rule = rule.Rule{}
 rule.SetContext("Hello World")
 rule.SetCondition(func (ctx any){
     value = ctx.(string)
@@ -40,7 +46,7 @@ Which is why it is better to create our own rule type
 
 // 1. Specify the business rule class
 type AllowAccessRule {
-    Rule
+    rule.Rule
 }
 
 func NewAllowAccessRule(user models.User) AllowAccessRule {
@@ -50,7 +56,7 @@ func NewAllowAccessRule(user models.User) AllowAccessRule {
 	return rule
 }
 
-var _ RuleInterface = (*AllowAccessRule)(nil) // verify it extends the RuleInterface interface
+var _ rule.RuleInterface = (*AllowAccessRule)(nil) // (optional) verify it extends the RuleInterface interface
 
 
 func (rule *AllowAccessRule) allowAccessCondition(context any) bool {
