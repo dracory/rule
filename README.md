@@ -4,10 +4,13 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/gouniverse/rule)](https://goreportcard.com/report/github.com/gouniverse/rule)
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/gouniverse/rule)](https://pkg.go.dev/github.com/gouniverse/rule)
 
+Powerful business rules
+
+## Introduction
+
 A business rule defines or constrains some aspect of business. Given a specified context (data) a business rule always resolves to either true or false.
 
 Business rules are intended to assert business structure or to control or influence the behavior of the business. Business rules describe the operations, definitions and constraints that apply to an organization. Business rules can apply to people, processes, corporate behavior and computing systems in an organization, and are put in place to help the organization achieve its goals.
-
 
 ## Formal specification: 
 
