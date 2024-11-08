@@ -18,13 +18,21 @@ type Rule struct {
 
 var _ RuleInterface = (*Rule)(nil) // verify it extends the RuleInterface interface
 
+// NewRule creates a new rule
+// Deprecated use New as it is shorter
 func NewRule() *Rule {
 	return &Rule{}
 }
 
+// New creates a new rule
+func New() *Rule {
+	return &Rule{}
+}
+
 // Sets the context/context for the rule
-func (rule *Rule) SetContext(context any) {
+func (rule *Rule) SetContext(context any) RuleInterface {
 	rule.context = context
+	return rule
 }
 
 func (rule *Rule) GetContext() any {
@@ -32,8 +40,9 @@ func (rule *Rule) GetContext() any {
 }
 
 // Sets the condition for the rule
-func (rule *Rule) SetCondition(condition func(context any) bool) {
+func (rule *Rule) SetCondition(condition func(context any) bool) RuleInterface {
 	rule.condition = condition
+	return rule
 }
 
 // Returns true if the rule evaluates to false

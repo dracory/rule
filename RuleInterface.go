@@ -1,9 +1,9 @@
 package rule
 
 type RuleInterface interface {
-	SetContext(ctx any)
+	SetContext(ctx any) RuleInterface
 	GetContext() any
-	SetCondition(conditionCallback func(ctx any) bool)
+	SetCondition(conditionCallback func(ctx any) bool) RuleInterface
 	Passes() bool
 	Fails() bool
 }

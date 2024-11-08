@@ -3,15 +3,13 @@ package rule
 import "testing"
 
 func TestRule(t *testing.T) {
-	rule := Rule{}
+	rule := New().
+		SetContext("hello").
+		SetCondition(func(ctx any) bool {
+			s := ctx.(string)
 
-	rule.SetContext("hello")
-
-	rule.SetCondition(func(ctx any) bool {
-		s := ctx.(string)
-
-		return s == "hello"
-	})
+			return s == "hello"
+		})
 
 	if rule.Fails() {
 		t.Fatalf("On Fails. Rule should not fail")
@@ -48,9 +46,7 @@ func TestRuleInheritance(t *testing.T) {
 	// 	return intVar < 0
 	// })
 
-	isNegative := NewIsNegativeRule()
-
-	isNegative.SetContext(5)
+	isNegative := NewIsNegativeRule().SetContext(5)
 
 	if !isNegative.Fails() {
 		t.Fatalf("Rule should fail")
