@@ -47,23 +47,26 @@ go get github.com/gouniverse/rule
 ### 1) Direct usage
 
 ```php
-rule = rule.Rule{}
+str := "Hello World"
 
-// Your data. The given context for this rule
-rule.SetContext("Hello World")
-
-// Your condition. When will the condition be met
-rule.SetCondition(func (ctx any){
-    value = ctx.(string)
-    return value == "Hello world"
-});
+// specify a simple rule that tests if a string is "Hello World"
+rule = rule.New().
+    // Your data. The given context for this rule
+    SetContext(str).
+    // Your condition. When will the condition be met
+    SetCondition(func (ctx any){
+        value = ctx.(string)
+        return value == "Hello world"
+    });
 
 if (rule.Fails()) {
     // Then Execute fail logic
+    print("String is not what we expected")
 }
 
 if (rule.Passes()) {
     // Then Execute pass logic
+    print("String is what we expected")
 }
 ```
 
