@@ -57,7 +57,18 @@ func (rule *Rule) Passes() bool {
 
 // Evaluates the condition and returns the result
 func (rule *Rule) Evaluate() bool {
+	if rule.condition == nil {
+		return false
+	}
 	return rule.condition(rule.context)
+}
+
+// Validate evaluates the rule and returns pass/fail with appropriate messages
+func (rule *Rule) Validate() (passed bool, messages []string) {
+	if rule.Evaluate() {
+		return true, rule.passMessages
+	}
+	return false, rule.failMessages
 }
 
 // AddFailMessage adds a fail message

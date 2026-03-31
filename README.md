@@ -49,25 +49,25 @@ go get github.com/dracory/rule
 
 ### 1) Direct usage
 
-```php
+```go
 str := "Hello World"
 
 // specify a simple rule that tests if a string is "Hello World"
-rule = rule.New().
+rule := rule.New().
     // Your data. The given context for this rule
     SetContext(str).
     // Your condition. When will the condition be met
-    SetCondition(func (ctx any){
-        value = ctx.(string)
-        return value == "Hello world"
-    });
+    SetCondition(func(ctx any) bool {
+        value := ctx.(string)
+        return value == "Hello World"
+    })
 
-if (rule.Fails()) {
+if rule.Fails() {
     // Then Execute fail logic
     print("String is not what we expected")
 }
 
-if (rule.Passes()) {
+if rule.Passes() {
     // Then Execute pass logic
     print("String is what we expected")
 }
@@ -87,8 +87,8 @@ type AllowAccessRule {
     rule.Rule
 }
 
-func NewAllowAccessRule(user models.User) AllowAccessRule {
-	rule := AllowAccessRule{}
+func NewAllowAccessRule(user models.User) *AllowAccessRule {
+	rule := &AllowAccessRule{}
     rule.SetContext(user)
 	rule.SetCondition(rule.allowAccessCondition)
 	return rule
