@@ -1,8 +1,8 @@
 # Business Rule
 
-[![Tests Status](https://github.com/gouniverse/rule/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/gouniverse/rule/actions/workflows/tests.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/gouniverse/rule)](https://goreportcard.com/report/github.com/gouniverse/rule)
-[![PkgGoDev](https://pkg.go.dev/badge/github.com/gouniverse/rule)](https://pkg.go.dev/github.com/gouniverse/rule)
+[![Tests Status](https://github.com/dracory/rule/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/dracory/rule/actions/workflows/tests.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/dracory/rule)](https://goreportcard.com/report/github.com/dracory/rule)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/dracory/rule)](https://pkg.go.dev/github.com/dracory/rule)
 
 Powerful business rules
 
@@ -42,7 +42,7 @@ Business rules expressed in this syntax can be used to automate business process
 ## Install ##
 
 ```go
-go get github.com/gouniverse/rule
+go get github.com/dracory/rule
 ```
 
 ## Usage ##

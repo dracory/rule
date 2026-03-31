@@ -1,3 +1,3 @@
-module github.com/gouniverse/rule
+module github.com/dracory/rule
 
-go 1.22
+go 1.26
