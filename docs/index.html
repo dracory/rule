@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Business Rule Builder — github.com/dracory/rule</title>
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <!-- Bootlegance Theme (Default: brutalski) -->
+  <link id="bootlegance-theme" href="https://cdn.jsdelivr.net/gh/lesichkovm/bootlegance@latest/themes/brutalski/theme.css" rel="stylesheet">
+
+  <style>
+    body {
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .code-container {
+      background-color: #0f172a;
+      color: #f8fafc;
+      border-radius: 0.5rem;
+      font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+    .code-container pre {
+      margin: 0;
+      padding: 1.25rem;
+      overflow-x: auto;
+    }
+    .badge-chip {
+      font-weight: 600;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.5rem;
+      min-width: 4.5rem;
+      text-align: center;
+      display: inline-block;
+    }
+    .syntax-comment { color: #64748b; font-style: italic; }
+    .syntax-string { color: #34d399; }
+    .syntax-keyword { color: #c084fc; font-weight: 600; }
+    .syntax-number { color: #fbbf24; }
+  </style>
+
+  <!-- React & React DOM -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <!-- Babel Standalone for JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script type="text/babel">
+    const { useState, useMemo, useEffect } = React;
+
+    /* ------------------------------------------------------------------ */
+    /* Bootlegance Themes List                                             */
+    /* ------------------------------------------------------------------ */
+    const THEMES = [
+      { value: 'brutalski', label: 'Brutalski', desc: 'Bold, raw, geometric brutalism' },
+      { value: 'dracula', label: 'Dracula', desc: 'Vibrant neon palette with dark/light mode' },
+      { value: 'catppuccin', label: 'Catppuccin', desc: 'Official Catppuccin palette' },
+      { value: 'cyberpunk', label: 'Cyberpunk', desc: 'Neon glowing accents' },
+      { value: 'nord', label: 'Nord', desc: 'Arctic-based palette' },
+      { value: 'tokyo-night', label: 'Tokyo Night', desc: 'Clean editor-inspired theme' },
+      { value: 'adwaita', label: 'Adwaita', desc: 'GNOME / libadwaita desktop foundation' },
+      { value: 'ant-design', label: 'Ant Design', desc: 'Enterprise-grade UI design language' },
+      { value: 'ayu', label: 'Ayu', desc: 'Bright and elegant for coding comfort' },
+      { value: 'carbon', label: 'Carbon', desc: 'Clinical, precise, enterprise-ready' },
+      { value: 'catppuccin-frappe', label: 'Catppuccin Frappé', desc: 'Soft mid-dark Catppuccin flavour' },
+      { value: 'catppuccin-macchiato', label: 'Catppuccin Macchiato', desc: 'Mid-dark Catppuccin flavour' },
+      { value: 'civic', label: 'Civic', desc: 'Inspired by US Web Design System' },
+      { value: 'mac-classic', label: 'Classic Mac OS', desc: 'System 7 / Mac OS 8 Platinum desktop interface' },
+      { value: 'dracula-soft', label: 'Dracula Soft', desc: 'Softened Dracula palette' },
+      { value: 'editorial', label: 'Editorial / Paper', desc: 'Serif typography and warm paper' },
+      { value: 'everforest', label: 'Everforest', desc: 'Green, comfortable, low-contrast palette' },
+      { value: 'fluent', label: 'Fluent', desc: 'Windows 11 Fluent Design theme' },
+      { value: 'forest', label: 'Forest', desc: 'Natural, earthy, organic' },
+      { value: 'github-primer', label: 'GitHub Primer', desc: 'Official GitHub Primer design system' },
+      { value: 'glassmorphism', label: 'Glassmorphism', desc: 'Frosted glass panels and gradients' },
+      { value: 'gruvbox', label: 'Gruvbox', desc: 'Retro-groove earthy palette' },
+      { value: 'high-contrast', label: 'High Contrast', desc: 'WCAG AAA contrast compliance' },
+      { value: 'kanagawa', label: 'Kanagawa', desc: 'Inspired by Japanese paintings' },
+      { value: 'kde-breeze', label: 'KDE Breeze', desc: 'KDE Plasma desktop inspired theme' },
+      { value: 'material-3', label: 'Material Design 3', desc: 'Material You design system' },
+      { value: 'midnight', label: 'Midnight', desc: 'Dark, sophisticated, professional' },
+      { value: 'neo-brutalism', label: 'Neo-brutalism', desc: 'Thick borders and offset shadows' },
+      { value: 'night-owl', label: 'Night Owl', desc: 'For nocturnal programmers' },
+      { value: 'nord-aurora', label: 'Nord Aurora', desc: 'Nord alternative colour scheme' },
+      { value: 'nord-frost', label: 'Nord Frost', desc: 'Lifted Polar Night with frost accents' },
+      { value: 'ocean', label: 'Ocean', desc: 'Cool, calm, trustworthy' },
+      { value: 'one-dark', label: 'One Dark', desc: 'Atom One Dark theme' },
+      { value: 'orchis', label: 'Orchis', desc: 'Material Design × macOS floating panels' },
+      { value: 'orchis-cyan', label: 'Orchis Cyan', desc: 'Cyan Orchis accent' },
+      { value: 'orchis-green', label: 'Orchis Green', desc: 'Green Orchis accent' },
+      { value: 'orchis-orange', label: 'Orchis Orange', desc: 'Orange Orchis accent' },
+      { value: 'orchis-pink', label: 'Orchis Pink', desc: 'Pink Orchis accent' },
+      { value: 'orchis-purple', label: 'Orchis Purple', desc: 'Purple Orchis accent' },
+      { value: 'orchis-red', label: 'Orchis Red', desc: 'Red Orchis accent' },
+      { value: 'orchis-sage', label: 'Orchis Sage', desc: 'Sage Orchis accent' },
+      { value: 'orchis-slate', label: 'Orchis Slate', desc: 'Slate Orchis accent' },
+      { value: 'orchis-yellow', label: 'Orchis Yellow', desc: 'Yellow Orchis accent' },
+      { value: 'pantheon', label: 'Pantheon', desc: 'elementary OS desktop theme' },
+      { value: 'print-optimized', label: 'Print-Optimized', desc: 'Tuned for printed pages & PDFs' },
+      { value: 'rose-pine', label: 'Rosé Pine', desc: 'All natural pine and soho vibes' },
+      { value: 'seneca', label: 'Seneca', desc: 'Enterprise UI inspired by ExtJS' },
+      { value: 'sepia', label: 'Sepia / Reading', desc: 'Kindle-style warm paper theme' },
+      { value: 'slate', label: 'Slate', desc: 'Minimal, neutral, clean' },
+      { value: 'solarized', label: 'Solarized', desc: 'Precision color palette for readability' },
+      { value: 'sunrise', label: 'Sunrise', desc: 'Warm, energetic, light' },
+      { value: 'swiss', label: 'Swiss / International', desc: 'Strict grid, neutral palette, signal red' },
+      { value: 'terminal', label: 'Terminal / CRT', desc: 'Phosphor CRT retro terminal' },
+      { value: 'vanguard', label: 'Vanguard', desc: 'Recreated Bootstrap 3 aesthetic' },
+      { value: 'vimix', label: 'Vimix', desc: 'macOS-inspired GNOME theme' },
+      { value: 'vimix-dark', label: 'Vimix Dark', desc: 'Graphite Vimix accent' },
+      { value: 'vimix-green', label: 'Vimix Green', desc: 'Green Vimix accent' },
+      { value: 'vimix-orange', label: 'Vimix Orange', desc: 'Orange Vimix accent' },
+      { value: 'vimix-pink', label: 'Vimix Pink', desc: 'Pink Vimix accent' },
+      { value: 'vimix-purple', label: 'Vimix Purple', desc: 'Purple Vimix accent' },
+      { value: 'vimix-red', label: 'Vimix Red', desc: 'Red Vimix accent' },
+      { value: 'vimix-teal', label: 'Vimix Teal', desc: 'Teal Vimix accent' },
+      { value: 'vimix-yellow', label: 'Vimix Yellow', desc: 'Yellow Vimix accent' },
+      { value: 'whitehall', label: 'Whitehall', desc: 'Clinical, high-accessibility UI' },
+      { value: 'whitesur', label: 'WhiteSur', desc: 'macOS-inspired frosted glass' },
+      { value: 'win98', label: 'Windows 98', desc: 'Classic 3D bevel desktop theme' },
+      { value: 'yaru', label: 'Yaru', desc: 'Ubuntu Yaru inspired theme' }
+    ];
+
+    /* ------------------------------------------------------------------ */
+    /* Operators                                                           */
+    /* ------------------------------------------------------------------ */
+    const OPERATORS = [
+      { value: "eq", label: "equals", needsValue: true, text: "equals", go: (e, v) => `${e} == ${v}` },
+      { value: "ne", label: "not equals", needsValue: true, text: "does not equal", go: (e, v) => `${e} != ${v}` },
+      { value: "gt", label: "greater than", needsValue: true, text: "is greater than", go: (e, v) => `${e} > ${v}` },
+      { value: "gte", label: "greater or equal", needsValue: true, text: "is greater than or equal to", go: (e, v) => `${e} >= ${v}` },
+      { value: "lt", label: "less than", needsValue: true, text: "is less than", go: (e, v) => `${e} < ${v}` },
+      { value: "lte", label: "less or equal", needsValue: true, text: "is less than or equal to", go: (e, v) => `${e} <= ${v}` },
+      { value: "contains", label: "contains", needsValue: true, text: "contains", go: (e, v) => `strings.Contains(${e}, ${v})` },
+      { value: "notContains", label: "does not contain", needsValue: true, text: "does not contain", go: (e, v) => `!strings.Contains(${e}, ${v})` },
+      { value: "startsWith", label: "starts with", needsValue: true, text: "starts with", go: (e, v) => `strings.HasPrefix(${e}, ${v})` },
+      { value: "endsWith", label: "ends with", needsValue: true, text: "ends with", go: (e, v) => `strings.HasSuffix(${e}, ${v})` },
+      { value: "isTrue", label: "is true", needsValue: false, text: "is true", go: (e) => e },
+      { value: "isFalse", label: "is false", needsValue: false, text: "is false", go: (e) => `!${e}` },
+      { value: "isEmpty", label: "is empty", needsValue: false, text: "is empty", go: (e) => `${e} == ""` },
+      { value: "isNotEmpty", label: "is not empty", needsValue: false, text: "is not empty", go: (e) => `${e} != ""` },
+    ];
+
+    const opByValue = (v) => OPERATORS.find((o) => o.value === v) || OPERATORS[0];
+
+    /* ------------------------------------------------------------------ */
+    /* Code Generator Helpers                                              */
+    /* ------------------------------------------------------------------ */
+    function goQuote(s) {
+      return '"' + String(s).replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, "\\n") + '"';
+    }
+
+    function goLiteral(value) {
+      const t = String(value).trim();
+      if (t === "") return '""';
+      if (/^-?\d+(\.\d+)?$/.test(t)) return t;
+      if (t === "true" || t === "false") return t;
+      return goQuote(t);
+    }
+
+    function pascalCase(s) {
+      const words = String(s).replace(/[^a-zA-Z0-9]+/g, " ").trim().split(/\s+/).filter(Boolean);
+      if (words.length === 0) return "My";
+      return words.map((w) => w[0].toUpperCase() + w.slice(1)).join("");
+    }
+
+    function contextVarName(goType) {
+      const t = String(goType || "").trim();
+      if (!t) return "";
+      const last = t.split(".").pop().trim();
+      const builtins = ["string", "int", "int8", "int16", "int32", "int64", "uint", "uint64", "float32", "float64", "bool", "byte", "rune", "any"];
+      if (builtins.includes(last) || !/^[A-Za-z]/.test(last)) return "value";
+      return last[0].toLowerCase() + last.slice(1);
+    }
+
+    function joinWith(conditions) {
+      const parts = conditions.filter((c) => c.expr.trim() !== "");
+      if (parts.length === 0) return "return true // no conditions defined yet";
+      const exprs = parts.map((c) => {
+        const op = opByValue(c.op);
+        return op.go(c.expr.trim(), op.needsValue ? goLiteral(c.value) : "");
+      });
+      let out = exprs[0];
+      for (let i = 1; i < exprs.length; i++) {
+        out += (parts[i].join === "or" ? " || " : " && ") + exprs[i];
+      }
+      return "return " + out;
+    }
+
+    function needsStrings(conditions) {
+      return conditions.some((c) => ["contains", "notContains", "startsWith", "endsWith"].includes(c.op) && c.expr.trim() !== "");
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Code Generators                                                     */
+    /* ------------------------------------------------------------------ */
+    function genCustomType(state) {
+      const structName = pascalCase(state.ruleName) + (state.ruleName.toLowerCase().endsWith("rule") ? "" : "Rule");
+      const condName = pascalCase(state.ruleName).replace(/Rule$/, "");
+      const condMethod = (condName.charAt(0).toLowerCase() + condName.slice(1) + "Condition").replace(/^./, (m) => m.toLowerCase());
+      const pkg = state.packageName || "rules";
+      const hasType = state.given.goType.trim() !== "";
+      const v = contextVarName(state.given.goType);
+      const argSig = hasType ? `${v} ${state.given.goType.trim()}` : "ctx any";
+      const ctxArg = hasType ? v : "ctx";
+      const assertion = hasType ? `\t${v} := ctx.(${state.given.goType.trim()})\n` : "";
+      const body = joinWith(state.conditions);
+      const imports = ["github.com/dracory/rule"];
+      if (needsStrings(state.conditions)) imports.unshift("strings");
+      const importBlock = imports.map((i) => `\t"${i}"`).join("\n");
+      const passMsg = state.passMessage.trim() ? `\n\tr.AddPassMessage(${goQuote(state.passMessage.trim())})` : "";
+      const failMsg = state.failMessage.trim() ? `\n\tr.AddFailMessage(${goQuote(state.failMessage.trim())})` : "";
+      const descComment = state.description.trim() ? `// ${structName} - ${state.description.trim()}` : `// ${structName} is a business rule`;
+
+      return `package ${pkg}
+
+import (
+${importBlock}
+)
+
+${descComment}
+type ${structName} struct {
+	rule.Rule
+}
+
+var _ rule.RuleInterface = (*${structName})(nil) // verify it extends RuleInterface
+
+// New${structName} creates a new ${structName}
+func New${structName}(${argSig}) *${structName} {
+	r := &${structName}{}
+	r.SetContext(${ctxArg})
+	r.SetCondition(r.${condMethod})${passMsg}${failMsg}
+	return r
+}
+
+// ${condMethod} returns true when all When conditions are met
+func (r *${structName}) ${condMethod}(ctx any) bool {
+${assertion}\t${body}
+}`;
+    }
+
+    function genDirectUsage(state) {
+      const hasType = state.given.goType.trim() !== "";
+      const v = contextVarName(state.given.goType);
+      const assertion = hasType ? `\t\t\t${v} := ctx.(${state.given.goType.trim()})\n` : "";
+      const body = joinWith(state.conditions);
+      const imports = ["fmt", "github.com/dracory/rule"];
+      if (needsStrings(state.conditions)) imports.splice(1, 0, "strings");
+      const importBlock = imports.map((i) => `\t"${i}"`).join("\n");
+      const passMsg = state.passMessage.trim() ? `\tr.AddPassMessage(${goQuote(state.passMessage.trim())})\n` : "";
+      const failMsg = state.failMessage.trim() ? `\tr.AddFailMessage(${goQuote(state.failMessage.trim())})\n` : "";
+
+      return `package main
+
+import (
+${importBlock}
+)
+
+func main() {
+	// ${state.ruleName || "Business rule"}: ${state.description.trim() || "a business rule"}
+	// ${hasType ? `${v} := loadYourContextHere() // your data, e.g. from the DB` : "ctx := loadYourContextHere() // your data"}
+	r := rule.New().
+		SetContext(${hasType ? v : "ctx"}).
+		SetCondition(func(ctx any) bool {
+${assertion}\t\t\t${body}
+		})
+${passMsg}${failMsg}
+	if r.Passes() {
+		fmt.Println(r.PassMessageFirst())
+	}
+
+	if r.Fails() {
+		fmt.Println(r.FailMessageFirst())
+	}
+}`;
+    }
+
+    function genStatement(state) {
+      const lines = [];
+      lines.push(["Given", state.given.description.trim() || "the context is set", "given"]);
+      const conds = state.conditions.filter((c) => c.expr.trim() !== "");
+      conds.forEach((c, i) => {
+        const op = opByValue(c.op);
+        const val = op.needsValue ? ` ${c.value}` : "";
+        const keyword = i === 0 ? "When" : c.join === "or" ? "Or" : "And";
+        lines.push([keyword, `${c.expr} ${op.text}${val}`.trim(), keyword.toLowerCase()]);
+      });
+      if (conds.length === 0) lines.push(["When", "no conditions are defined yet", "when"]);
+      lines.push(["Then", state.passMessage.trim() || "the rule passes", "then"]);
+      lines.push(["Or", state.failMessage.trim() || "the rule fails", "or"]);
+      return lines;
+    }
+
+    function highlightGo(code) {
+      const esc = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      const re = /(\/\/[^\n]*)|("(?:[^"\\]|\\.)*")|\b(package|import|func|return|if|else|type|struct|var|const|nil|true|false|new|range|any|string|bool|int|interface|for)\b|\b(\d+(?:\.\d+)?)\b/g;
+      return esc.replace(re, (m, comment, str, kw, num) => {
+        if (comment) return `<span class="syntax-comment">${comment}</span>`;
+        if (str) return `<span class="syntax-string">${str}</span>`;
+        if (kw) return `<span class="syntax-keyword">${kw}</span>`;
+        if (num) return `<span class="syntax-number">${num}</span>`;
+        return m;
+      });
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Presets                                                             */
+    /* ------------------------------------------------------------------ */
+    let uid = 100;
+    const newId = () => String(uid++);
+
+    const EXAMPLES = [
+      {
+        id: "access",
+        label: "Allow Access",
+        hint: "User account & access control",
+        data: {
+          ruleName: "Allow Access",
+          packageName: "rules",
+          description: "A user is allowed access when their email is confirmed and their account is active",
+          given: { description: "a user requests access to the website", goType: "models.User" },
+          conditions: [
+            { id: "1", expr: "user.IsEmailConfirmed()", op: "isTrue", value: "", join: "and" },
+            { id: "2", expr: "user.IsActive()", op: "isTrue", value: "", join: "and" },
+          ],
+          passMessage: "Access granted",
+          failMessage: "You are not allowed access to this part of the website",
+        },
+      },
+      {
+        id: "age",
+        label: "Legal Age Purchase",
+        hint: "Compliance — alcohol purchase",
+        data: {
+          ruleName: "Legal Age Purchase",
+          packageName: "rules",
+          description: "A customer may only purchase alcohol when they are of legal age",
+          given: { description: "a customer purchases alcohol", goType: "models.Customer" },
+          conditions: [{ id: "1", expr: "customer.Age", op: "gte", value: "18", join: "and" }],
+          passMessage: "Purchase approved",
+          failMessage: "Customer is not of legal age to purchase alcohol",
+        },
+      },
+      {
+        id: "order",
+        label: "Approve Sales Order",
+        hint: "Efficiency — auto-approve low-risk orders",
+        data: {
+          ruleName: "Approve Sales Order",
+          packageName: "rules",
+          description: "Paid orders under the threshold from active customers are auto-approved",
+          given: { description: "a sales order is submitted", goType: "models.SalesOrder" },
+          conditions: [
+            { id: "1", expr: "order.IsPaid()", op: "isTrue", value: "", join: "and" },
+            { id: "2", expr: "order.TotalAmount", op: "lt", value: "10000", join: "and" },
+            { id: "3", expr: "order.Customer.IsActive()", op: "isTrue", value: "", join: "and" },
+          ],
+          passMessage: "Sales order auto-approved",
+          failMessage: "Sales order requires manual review",
+        },
+      },
+      {
+        id: "discount",
+        label: "Premium Discount",
+        hint: "Pricing — checkout promotion",
+        data: {
+          ruleName: "Premium Discount",
+          packageName: "rules",
+          description: "Premium customers get a discount on large carts",
+          given: { description: "a customer checks out their cart", goType: "models.Cart" },
+          conditions: [
+            { id: "1", expr: "cart.Customer.IsPremium()", op: "isTrue", value: "", join: "and" },
+            { id: "2", expr: "cart.TotalAmount", op: "gte", value: "100", join: "and" },
+          ],
+          passMessage: "Apply 10% discount",
+          failMessage: "No discount applies",
+        },
+      },
+      {
+        id: "hello",
+        label: "Hello World",
+        hint: "Simple string check — direct usage style",
+        data: {
+          ruleName: "Hello World",
+          packageName: "rules",
+          description: "A simple rule that tests if a string is Hello World",
+          given: { description: "a string is provided as context", goType: "string" },
+          conditions: [{ id: "1", expr: "value", op: "eq", value: "Hello World", join: "and" }],
+          passMessage: "String is what we expected",
+          failMessage: "String is not what we expected",
+        },
+      },
+    ];
+
+    const EMPTY = {
+      ruleName: "",
+      packageName: "rules",
+      description: "",
+      given: { description: "", goType: "" },
+      conditions: [{ id: "1", expr: "", op: "eq", value: "", join: "and" }],
+      passMessage: "",
+      failMessage: "",
+    };
+
+    /* ------------------------------------------------------------------ */
+    /* Step Chip Component                                                */
+    /* ------------------------------------------------------------------ */
+    const chipBadgeStyles = {
+      given: "bg-primary text-white",
+      when: "bg-warning text-dark",
+      and: "bg-warning text-dark",
+      or: "bg-danger text-white",
+      then: "bg-success text-white",
+    };
+
+    function StepChip({ keyword, kind }) {
+      return (
+        <span className={`badge badge-chip ${chipBadgeStyles[kind] || 'bg-secondary text-white'}`}>
+          {keyword}
+        </span>
+      );
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Main App Component                                                  */
+    /* ------------------------------------------------------------------ */
+    function App() {
+      const [state, setState] = useState(EXAMPLES[0].data);
+      const [tab, setTab] = useState("custom");
+      const [copied, setCopied] = useState(false);
+      const [currentTheme, setCurrentTheme] = useState("brutalski");
+      const [colorMode, setColorMode] = useState("light");
+
+      const set = (patch) => setState((s) => ({ ...s, ...patch }));
+
+      const loadExample = (ex) => {
+        setState({ ...ex.data, conditions: ex.data.conditions.map((c) => ({ ...c, id: newId() })) });
+      };
+
+      const addCondition = () =>
+        setState((s) => ({ ...s, conditions: [...s.conditions, { id: newId(), expr: "", op: "eq", value: "", join: "and" }] }));
+
+      const updateCondition = (id, patch) =>
+        setState((s) => ({ ...s, conditions: s.conditions.map((c) => (c.id === id ? { ...c, ...patch } : c)) }));
+
+      const removeCondition = (id) =>
+        setState((s) => ({ ...s, conditions: s.conditions.length > 1 ? s.conditions.filter((c) => c.id !== id) : s.conditions }));
+
+      const switchTheme = (themeValue) => {
+        setCurrentTheme(themeValue);
+        const link = document.getElementById("bootlegance-theme");
+        if (link) {
+          link.href = `https://cdn.jsdelivr.net/gh/lesichkovm/bootlegance@latest/themes/${themeValue}/theme.css`;
+        }
+      };
+
+      const toggleColorMode = () => {
+        const nextMode = colorMode === "light" ? "dark" : "light";
+        setColorMode(nextMode);
+        document.documentElement.setAttribute("data-bs-theme", nextMode);
+      };
+
+      const codes = useMemo(
+        () => ({ custom: genCustomType(state), direct: genDirectUsage(state) }),
+        [state]
+      );
+      const statement = useMemo(() => genStatement(state), [state]);
+
+      const activeCode = tab === "statement" ? null : codes[tab];
+      const statementText = statement.map(([k, t]) => `${k} ${t}`).join("\n");
+
+      const copyToClipboard = async () => {
+        const text = tab === "statement" ? statementText : activeCode;
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch (e) {
+          const ta = document.createElement("textarea");
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          document.body.removeChild(ta);
+        }
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1600);
+      };
+
+      return (
+        <div>
+          {/* Header */}
+          <nav className="navbar navbar-expand-lg border-bottom shadow-sm py-3">
+            <div className="container-fluid px-4">
+              <div className="d-flex align-items-center gap-2">
+                <i className="bi bi-shield-check text-primary fs-3"></i>
+                <div>
+                  <h1 className="h5 mb-0 fw-bold">Business Rule Builder</h1>
+                  <p className="small text-muted mb-0">
+                    Given · When · Then · Or — Visual Go Business Rules Generator for{" "}
+                    <code className="text-primary">github.com/dracory/rule</code>
+                  </p>
+                </div>
+              </div>
+
+              <div className="d-flex flex-wrap align-items-center gap-2 mt-2 mt-lg-0">
+                {/* Theme Selector */}
+                <div className="input-group input-group-sm w-auto">
+                  <span className="input-group-text"><i className="bi bi-palette"></i></span>
+                  <select
+                    className="form-select form-select-sm"
+                    value={currentTheme}
+                    onChange={(e) => switchTheme(e.target.value)}
+                    aria-label="Select Bootlegance Theme"
+                  >
+                    {THEMES.map((t) => (
+                      <option key={t.value} value={t.value}>
+                        Theme: {t.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Dark / Light Toggle */}
+                <button
+                  className="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1"
+                  onClick={toggleColorMode}
+                  title="Toggle Light / Dark Mode"
+                >
+                  <i className={`bi ${colorMode === "light" ? "bi-moon-stars-fill" : "bi-sun-fill"}`}></i>
+                  <span>{colorMode === "light" ? "Dark" : "Light"}</span>
+                </button>
+
+                {/* Reset */}
+                <button
+                  className="btn btn-sm btn-outline-danger"
+                  onClick={() => setState({ ...EMPTY })}
+                >
+                  <i className="bi bi-arrow-counterclockwise me-1"></i>Reset
+                </button>
+
+                {/* Presets Dropdown */}
+                <div className="dropdown">
+                  <button
+                    className="btn btn-sm btn-primary dropdown-toggle"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    <i className="bi bi-rocket-takeoff me-1"></i>Load Example
+                  </button>
+                  <ul className="dropdown-menu dropdown-menu-end shadow">
+                    {EXAMPLES.map((ex) => (
+                      <li key={ex.id}>
+                        <button
+                          className="dropdown-item py-2"
+                          onClick={() => loadExample(ex)}
+                        >
+                          <div className="fw-semibold">{ex.label}</div>
+                          <div className="small text-muted">{ex.hint}</div>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </nav>
+
+          {/* Main Layout */}
+          <main className="container-fluid px-4 py-4">
+            <div className="row g-4">
+              {/* Left Column: Form Controls */}
+              <div className="col-lg-6">
+                <div className="d-flex flex-column gap-4">
+
+                  {/* Rule Info Card */}
+                  <div className="card shadow-sm">
+                    <div className="card-header bg-body border-bottom py-3">
+                      <h2 className="card-title h6 mb-0 text-uppercase fw-bold text-secondary">
+                        <i className="bi bi-gear me-2"></i>Rule Definition
+                      </h2>
+                    </div>
+                    <div className="card-body">
+                      <div className="row g-3">
+                        <div className="col-md-6">
+                          <label className="form-label small fw-semibold">Rule Name</label>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm"
+                            value={state.ruleName}
+                            placeholder="e.g. Allow Access"
+                            onChange={(e) => set({ ruleName: e.target.value })}
+                          />
+                        </div>
+                        <div className="col-md-6">
+                          <label className="form-label small fw-semibold">Go Package Name</label>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm"
+                            value={state.packageName}
+                            placeholder="rules"
+                            onChange={(e) => set({ packageName: e.target.value })}
+                          />
+                        </div>
+                        <div className="col-12">
+                          <label className="form-label small fw-semibold">Description (Go doc comment)</label>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm"
+                            value={state.description}
+                            placeholder="What business rule does this enforce?"
+                            onChange={(e) => set({ description: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Given Card */}
+                  <div className="card shadow-sm">
+                    <div className="card-header bg-body border-bottom py-3">
+                      <h2 className="card-title h6 mb-0 text-uppercase fw-bold text-primary">
+                        <i className="bi bi-[#4f46e5] bi-info-circle me-2"></i>Given (Context Data)
+                      </h2>
+                    </div>
+                    <div className="card-body">
+                      <div className="row g-3">
+                        <div className="col-md-6">
+                          <label className="form-label small fw-semibold">Context Description</label>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm"
+                            value={state.given.description}
+                            placeholder="a user requests access to the website"
+                            onChange={(e) => set({ given: { ...state.given, description: e.target.value } })}
+                          />
+                        </div>
+                        <div className="col-md-6">
+                          <label className="form-label small fw-semibold">Go Type of Context</label>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm font-monospace"
+                            value={state.given.goType}
+                            placeholder="e.g. models.User"
+                            onChange={(e) => set({ given: { ...state.given, goType: e.target.value } })}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* When Card */}
+                  <div className="card shadow-sm">
+                    <div className="card-header bg-body border-bottom py-3 d-flex justify-content-between align-items-center">
+                      <h2 className="card-title h6 mb-0 text-uppercase fw-bold text-warning">
+                        <i className="bi bi-check2-square me-2"></i>When (Conditions)
+                      </h2>
+                      <span className="badge bg-light text-dark border">
+                        {state.conditions.length} {state.conditions.length === 1 ? 'condition' : 'conditions'}
+                      </span>
+                    </div>
+                    <div className="card-body">
+                      <div className="d-flex flex-column gap-3">
+                        {state.conditions.map((c, i) => (
+                          <div key={c.id} className="p-3 border rounded bg-body-tertiary">
+                            <div className="row g-2 align-items-center">
+                              <div className="col-auto">
+                                {i === 0 ? (
+                                  <StepChip keyword="When" kind="when" />
+                                ) : (
+                                  <select
+                                    className="form-select form-select-sm fw-bold uppercase"
+                                    value={c.join}
+                                    onChange={(e) => updateCondition(c.id, { join: e.target.value })}
+                                    style={{ width: "80px" }}
+                                  >
+                                    <option value="and">And</option>
+                                    <option value="or">Or</option>
+                                  </select>
+                                )}
+                              </div>
+                              <div className="col">
+                                <input
+                                  type="text"
+                                  className="form-control form-control-sm font-monospace"
+                                  value={c.expr}
+                                  placeholder="e.g. user.IsActive()"
+                                  onChange={(e) => updateCondition(c.id, { expr: e.target.value })}
+                                />
+                              </div>
+                              <div className="col-auto">
+                                <button
+                                  className="btn btn-sm btn-outline-danger"
+                                  onClick={() => removeCondition(c.id)}
+                                  disabled={state.conditions.length === 1}
+                                  title="Remove Condition"
+                                >
+                                  <i className="bi bi-trash"></i>
+                                </button>
+                              </div>
+                            </div>
+
+                            <div className="row g-2 align-items-center mt-2 ps-md-5">
+                              <div className="col-md-5">
+                                <select
+                                  className="form-select form-select-sm"
+                                  value={c.op}
+                                  onChange={(e) => updateCondition(c.id, { op: e.target.value })}
+                                >
+                                  {OPERATORS.map((o) => (
+                                    <option key={o.value} value={o.value}>
+                                      {o.label}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                              <div className="col-md-7">
+                                {opByValue(c.op).needsValue ? (
+                                  <input
+                                    type="text"
+                                    className="form-control form-control-sm font-monospace"
+                                    value={c.value}
+                                    placeholder='e.g. 18, true, "UK"'
+                                    onChange={(e) => updateCondition(c.id, { value: e.target.value })}
+                                  />
+                                ) : (
+                                  <span className="small text-muted fst-italic">no value required</span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+
+                        <button
+                          className="btn btn-outline-primary btn-sm w-100 py-2 border-dashed"
+                          onClick={addCondition}
+                        >
+                          <i className="bi bi-plus-circle me-1"></i> Add Condition
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Then & Or Messages Card */}
+                  <div className="row g-3">
+                    <div className="col-md-6">
+                      <div className="card shadow-sm h-100">
+                        <div className="card-header bg-body border-bottom py-2">
+                          <h2 className="card-title h6 mb-0 text-uppercase fw-bold text-success">
+                            <i className="bi bi-check-circle me-1"></i>Then (On Pass)
+                          </h2>
+                        </div>
+                        <div className="card-body">
+                          <input
+                            type="text"
+                            className="form-control form-control-sm"
+                            value={state.passMessage}
+                            placeholder="e.g. Access granted"
+                            onChange={(e) => set({ passMessage: e.target.value })}
+                          />
+                          <p className="small text-muted mt-2 mb-0">
+                            Configures <code className="small">AddPassMessage()</code>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="col-md-6">
+                      <div className="card shadow-sm h-100">
+                        <div className="card-header bg-body border-bottom py-2">
+                          <h2 className="card-title h6 mb-0 text-uppercase fw-bold text-danger">
+                            <i className="bi bi-x-circle me-1"></i>Or (On Fail)
+                          </h2>
+                        </div>
+                        <div className="card-body">
+                          <input
+                            type="text"
+                            className="form-control form-control-sm"
+                            value={state.failMessage}
+                            placeholder="e.g. Access denied"
+                            onChange={(e) => set({ failMessage: e.target.value })}
+                          />
+                          <p className="small text-muted mt-2 mb-0">
+                            Configures <code className="small">AddFailMessage()</code>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              {/* Right Column: Code Generation and Statement Preview */}
+              <div className="col-lg-6">
+                <div className="d-flex flex-column gap-4 sticky-top" style={{ top: "1rem" }}>
+
+                  {/* Statement Card */}
+                  <div className="card shadow-sm">
+                    <div className="card-header bg-body border-bottom py-3">
+                      <h2 className="card-title h6 mb-0 text-uppercase fw-bold text-secondary">
+                        <i className="bi bi-file-earmark-text me-2"></i>Rule Statement
+                      </h2>
+                    </div>
+                    <div className="card-body">
+                      <div className="d-flex flex-column gap-2">
+                        {statement.map(([keyword, text, kind], i) => (
+                          <div key={i} className="d-flex align-items-center gap-3">
+                            <StepChip keyword={kind === "and" ? "And" : keyword} kind={kind} />
+                            <span className="small text-body-secondary fw-medium">{text}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Code Box Panel */}
+                  <div className="card shadow-lg border-0 bg-dark text-white">
+                    <div className="card-header bg-dark border-bottom border-secondary d-flex justify-content-between align-items-center py-2">
+                      <ul className="nav nav-pills card-header-pills">
+                        <li className="nav-item">
+                          <button
+                            className={`nav-link btn-sm py-1 px-3 ${tab === "custom" ? "active" : "text-white-50"}`}
+                            onClick={() => setTab("custom")}
+                          >
+                            Custom Rule Type <span className="badge bg-primary-subtle text-primary ms-1">Rec</span>
+                          </button>
+                        </li>
+                        <li className="nav-item">
+                          <button
+                            className={`nav-link btn-sm py-1 px-3 ${tab === "direct" ? "active" : "text-white-50"}`}
+                            onClick={() => setTab("direct")}
+                          >
+                            Direct Usage
+                          </button>
+                        </li>
+                        <li className="nav-item">
+                          <button
+                            className={`nav-link btn-sm py-1 px-3 ${tab === "statement" ? "active" : "text-white-50"}`}
+                            onClick={() => setTab("statement")}
+                          >
+                            Statement Text
+                          </button>
+                        </li>
+                      </ul>
+
+                      <button
+                        className="btn btn-sm btn-primary d-flex align-items-center gap-1"
+                        onClick={copyToClipboard}
+                      >
+                        <i className={`bi ${copied ? "bi-check-lg" : "bi-clipboard"}`}></i>
+                        <span>{copied ? "Copied!" : "Copy"}</span>
+                      </button>
+                    </div>
+
+                    <div className="card-body p-0 code-container">
+                      {tab === "statement" ? (
+                        <pre className="p-3"><code>{statementText}</code></pre>
+                      ) : (
+                        <pre className="p-3">
+                          <code dangerouslySetInnerHTML={{ __html: highlightGo(activeCode) }}></code>
+                        </pre>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Footer note */}
+                  <div className="alert alert-info py-2 px-3 small mb-0">
+                    <i className="bi bi-info-circle-fill me-2"></i>
+                    Install package with <code className="bg-body-tertiary px-1 py-0.5 rounded">go get github.com/dracory/rule</code>.
+                    Conditions are evaluated left-to-right with <code className="bg-body-tertiary px-1 py-0.5 rounded">&amp;&amp;</code> / <code className="bg-body-tertiary px-1 py-0.5 rounded">||</code>.
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
